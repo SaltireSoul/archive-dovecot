@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+  dovecot:
+    build: ./build/docker
+    container_name: srv_dovecot
+    restart: unless-stopped
+    volumes:
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+      - ./data/conf:/etc/dovecot
+      - ./data/vmail:/home/vmail
+    ports:
+      - "143:143"
+      - "993:993"
