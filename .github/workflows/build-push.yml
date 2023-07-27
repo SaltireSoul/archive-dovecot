@@ -1,26 +1,34 @@
 name: Docker build/publish when base image is updated
 on:
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      needs-updating: ${{ steps.check.outputs.needs-updating }}
+    steps:
+      - name: Check if update available
+        id: check
+        uses: lucacome/docker-image-update-checker@v1
+        with:
+          base-image: ajoergensen/baseimage-alpine:latest
+          image: saltiresoul/archive-dovecot:latest
+          platforms: linux/amd64,linux/arm64
+
   build-docker-images:
+    needs: check
     name: Build Docker Images
     runs-on: ubuntu-latest
+    if: needs.check.outputs.needs-updating == 'true'
     permissions:
       packages: write
       contents: read
     steps:
       - name: Check out the repo
         uses: actions/checkout@v3
-    
-      - name: Docker Image Update Checker
-        id: baseupdatecheck
-        uses: ClementTsang/docker-check-base-image-diff@v0.0.2
-        with:
-          base-image: docker://ajoergensen/baseimage-alpine
-          derived-image: docker://ghcr.io/saltiresoul/archive-dovecot
       
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -38,7 +46,6 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
-        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
         
       - name: Log in to GitHub Docker Registry
         uses: docker/login-action@v2
@@ -46,7 +53,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_TOKEN }}
-        if: steps.baseupdatecheck.outputs.needs-updating == 'true'
 
       #https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables=
       #https://github.com/docker/build-push-action
@@ -60,7 +66,3 @@ jobs:
             ${{ steps.lowercase-repo-name.outputs.lowercase }}:latest
             ghcr.io/${{ steps.lowercase-repo-name.outputs.lowercase }}:latest
         if: ${{ github.event_name != 'pull_request' && steps.baseupdatecheck.outputs.differs == 'true' }}
-
-      # Keep repo alive with dummy commits: https://github.com/marketplace/actions/keepalive-workflow
-      - name: Keepalive
-        uses: gautamkrishnar/keepalive-workflow@v1 # using the workflow with default settings
