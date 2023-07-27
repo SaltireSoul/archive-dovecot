@@ -18,6 +18,9 @@ jobs:
           image: saltiresoul/archive-dovecot:latest
           platforms: linux/amd64,linux/arm64,linux/arm/v7
 
+      - name: check for any update
+        run: echo "${{steps.check.outputs.needs-updating}}"
+
   build-docker-images:
     needs: check
     name: Build Docker Images
