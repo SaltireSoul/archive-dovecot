@@ -16,7 +16,7 @@ jobs:
         with:
           base-image: ajoergensen/baseimage-alpine:latest
           image: saltiresoul/archive-dovecot:latest
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
 
       - name: check for any update
         run: echo "${{steps.check.outputs.needs-updating}}"
