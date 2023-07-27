@@ -1,62 +1,39 @@
-# README for local IMAP archive docker service
+# archive-dovecot
+**DO NOT** use on public server
 
-This is a docker compose recipe for creating a local dovecot imap server 
-instance to be used as email client independent central archiving service
-within a local network.
+A dovecot imap server to be used as an independent central archiving service within a local network.
 
-**IMPORTANT**: due to the simple default configuration this container is
-not intendend for providing a public internet facing service.
+ajoergensen's base image supports AMD64, ARM64 & ARMv7 [GitHub](https://github.com/ajoergensen/baseimage-alpine) [dockerhub](https://hub.docker.com/r/ajoergensen/baseimage-alpine).
 
-**IMPORTANT**: default account in the example is `archive:archive`, for improved
-security consider
+![Image Size][shieldsize] [![Image Docker Hub Registry](https://img.shields.io/static/v1.svg?color=blue&labelColor=555555&logoColor=ffffff&style=for-the-badge&label=saltiresoul&message=Docker%20Registry&logo=docker)](https://hub.docker.com/r/saltiresoul/archive-dovecot) [![Image GitHub Registry](https://img.shields.io/static/v1.svg?color=blueviolet&labelColor=555555&logoColor=ffffff&style=for-the-badge&label=saltiresoul&message=GitHub%20Package&logo=github)](https://github.com/SaltireSoul/archive-dovecot/pkgs/container/archive-dovecot)
 
-* changing the password/account (see below) 
-* enable ssl (see `data/conf/dovecot.conf`)
+[shieldsize]: https://img.shields.io/docker/image-size/saltiresoul/archive-dovecot/latest?style=for-the-badge
 
-## Prerequisites
+### Difference to local-imap-archive-container
+None.
 
-Installed (below are the debian package names)
+This repo simply builds & pushes images to Docker Hub & GHCR.  No other changes made. **[Original Source](https://github.com/ckolumbus/local-imap-archive-container)**
 
-* docker-ce
-* docker-compose or docker-compose-plugin
 
-Examples based on `docker-compose` syntax
+## Quick Start
 
-## Start
+**IMPORTANT**: default user account is `archive:archive`
+
+You can change the username before starting service
 
 ```
-git clone https://github.com/ckolumbus/local-imap-archive-container.git
-cd local-imap-archive-container
+git clone https://github.com/SaltireSoul/archive-dovecot.git
+cd archive-dovecot
+cp data/conf/users.example data/conf/users
 docker-compose up -d
 ```
 
-## Config
-
-### quick start
-
-`cp data/conf/users.example data/conf/users`
-
-### create user/password entries
-
-generate hash entry
+#### Change Password
 
 ```
 docker-compose exec dovecot doveadm pw -s sha256-crypt
 ```
+Replace `{PLAIN}archive` within `data/conf/users` with generated hash
 
-add a line 
-
-```
-<username>:<hash from above>
-```
-
-to  `./data/conf/users`
-
-See [details here](https://doc.dovecot.org/configuration_manual/authentication/passwd_file/#examples)
-for more options on how to edit the user password file.
-
-
-## References
-
-* [user config](https://github.com/1wilkens/dockerfiles/blob/master/dovecot/alpine-3.15/Dockerfile)
-* [Simple config](https://doc.dovecot.org/configuration_manual/howto/simple_virtual_install/)
+## Enable SSL
+* See `data/conf/dovecot.conf`

@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   dovecot:
-    build: ./build/docker
+    image: saltiresoul/archive-dovecot:latest
     container_name: srv_dovecot
     restart: unless-stopped
     volumes:
