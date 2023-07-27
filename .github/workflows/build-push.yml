@@ -12,20 +12,20 @@ jobs:
     steps:
       - name: Check if update available
         id: check
-        uses: lucacome/docker-image-update-checker@v1
+        
+        uses: ClementTsang/docker-check-base-image-diff@v0.0.2
         with:
           base-image: ajoergensen/baseimage-alpine:latest
-          image: saltiresoul/archive-dovecot:latest
-          platforms: linux/amd64,linux/arm64
+          derived-image: saltiresoul/archive-dovecot:latest
 
       - name: check for any update
-        run: echo "${{steps.check.outputs.needs-updating}}"
+        run: echo "${{steps.check.outputs.differs}}"
 
   build-docker-images:
     needs: check
     name: Build Docker Images
     runs-on: ubuntu-latest
-    if: needs.check.outputs.needs-updating == 'true'
+    if: needs.check.outputs.differs == 'true'
     permissions:
       packages: write
       contents: read
@@ -68,4 +68,3 @@ jobs:
           tags: |
             ${{ steps.lowercase-repo-name.outputs.lowercase }}:latest
             ghcr.io/${{ steps.lowercase-repo-name.outputs.lowercase }}:latest
-        if: ${{ github.event_name != 'pull_request' && steps.baseupdatecheck.outputs.differs == 'true' }}
