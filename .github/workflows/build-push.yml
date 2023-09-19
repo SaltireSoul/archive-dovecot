@@ -21,6 +21,15 @@ jobs:
       - name: check for any update
         run: echo "${{steps.check.outputs.differs}}"
 
+  dump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+        #run: echo '${{ toJSON(github) }}'
+
   build-docker-images:
     needs: check
     name: Build Docker Images
