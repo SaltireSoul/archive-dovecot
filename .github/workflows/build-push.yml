@@ -8,7 +8,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     outputs:
-      needs-updating: ${{ steps.check.outputs.needs-updating }}
+      needs-updating: ${{ steps.check.outputs.differs }}
     steps:
       - name: Check if update available
         id: check
