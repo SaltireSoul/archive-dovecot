@@ -21,9 +21,6 @@ jobs:
       - name: check for any update
         run: echo "${{steps.check.outputs.differs}}"
 
-      - name: Check result
-        run: echo "Needs updating: ${{ steps.check.outputs.needs-updating }}"
-
   build-docker-images:
     needs: check
     name: Build Docker Images
